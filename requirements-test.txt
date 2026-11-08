@@ -1,0 +1,10 @@
+# Small subset of requirements.txt for the GitHub Actions test job.
+# The tests use a fake LLM, so CI does not need torch, transformers or the
+# CUDA libraries (about 4 GB). Versions match requirements.txt.
+pypdf==7.0.0
+pyyaml==6.0.3
+pandas==3.1.1
+numpy==2.5.4
+python-dateutil==4.0.0
+tzdata==2026.6
+pytest==9.2.0

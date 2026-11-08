@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.venv-build/
+.pytest_cache/
+
+# Build output (the binary goes on a GitHub Release, not in git)
+build/
+dist/
+*.spec.bak
+
+# CIS PDFs: licensed by CIS, so not in this public repo. See README.
+inputs/*.pdf
+# Course Dockerfiles: Auburn SharePoint download, not ours to publish.
+dockerfiles.zip
+dokcerfiles.zip
+inputs/*.zip
+
+# Tool outputs and the Hadolint binary (downloaded by scripts/get_hadolint.sh)
+outputs/
+bin/
+
+# Local notes for Claude Code
+CLAUDE.md
+cisdiff.spec

@@ -1,0 +1,63 @@
+# Map from CIS Docker Benchmark topics to Hadolint rules.
+#
+# The executor (Task-3) puts each difference from Task-2 ("element name" plus
+# "requirement text") in lower case and tests it against every `pattern`
+# (a Python regular expression). Each pattern that matches adds its `rules`.
+#
+# Most CIS recommendations in sections 1-3 and 6-7 are about the Docker host
+# and daemon (audit rules, file permissions, daemon.json, TLS). Hadolint only
+# reads Dockerfiles, so those topics have no rule here. Sections 4 (images
+# and build files) and 5 (container runtime) map well.
+
+mappings:
+  - topic: "4.1 / 5.24 run the container as a non-root user"
+    pattern: "\\buser\\b|non-root|user=root|\\broot user"
+    rules: [DL3002, DL3046, DL3066]
+
+  - topic: "4.2 / 5.28 trusted and pinned base images"
+    pattern: "base image|trusted image|latest version of (their|the) image|image tag|\\bfrom\\b instruction"
+    rules: [DL3006, DL3007, DL3026, DL3029]
+
+  - topic: "4.3 unnecessary packages"
+    pattern: "unnecessary packages|minimal (image|packages)"
+    rules: [DL3015, DL3001]
+
+  - topic: "4.4 / 4.7 update instructions and patch layers"
+    pattern: "update instruction|security patch|rebuilt|apt-get update|package (cache|lists)"
+    rules: [DL3009, DL3014, DL3019, DL3027, DL3030, DL3032, DL3034, DL3036, DL3038, DL3040, DL3059]
+
+  - topic: "4.6 / 5.27 HEALTHCHECK"
+    pattern: "healthcheck|health is checked|container health"
+    rules: [DL3057, DL3012]
+
+  - topic: "4.8 setuid and setgid"
+    pattern: "setuid|setgid|suid|sgid"
+    rules: [DL3004]
+
+  - topic: "4.9 COPY instead of ADD"
+    pattern: "\\bcopy\\b|\\badd\\b"
+    rules: [DL3020, DL3010, DL3021, DL3045]
+
+  - topic: "4.10 secrets in Dockerfiles"
+    pattern: "secret|password|credential|sensitive data"
+    rules: [DL3064]
+
+  - topic: "4.11 / 4.12 verified and pinned packages"
+    pattern: "verified packages|signed artifacts|content trust|package version|pin"
+    rules: [DL3008, DL3013, DL3016, DL3018, DL3028, DL3033, DL3037, DL3041, DL3062, DL3068]
+
+  - topic: "5.5 / 5.23 privileged execution"
+    pattern: "privileged|sudo|additional privileges|new privileges"
+    rules: [DL3004, DL3002]
+
+  - topic: "5.7 sshd in containers"
+    pattern: "\\bsshd?\\b"
+    rules: [DL3001]
+
+  - topic: "5.8 / 5.9 container ports"
+    pattern: "\\bports?\\b|expose"
+    rules: [DL3011]
+
+  - topic: "Dockerfile build file in general"
+    pattern: "dockerfile|build file|container image"
+    rules: [DL3000, DL3003, DL3025, DL4000, DL4003, DL4004, DL4006]
