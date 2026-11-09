@@ -32,6 +32,7 @@ Design decisions:
 - **Requirements are titles without numbers.** CIS v1.8.0 added recommendation 2.7, and the numbers of 2.7–2.18 moved down by one. If the YAML used the numbers, each renumbered item would show as a false difference.
 - **YAML from the few-shot prompt.** All three prompt types run, and all of their answers are in `llm-outputs.txt`. The YAML files use the few-shot answers, because they gave the most specific KDE names. Use `--prompt-type` to change this.
 - **Differences that Hadolint cannot check.** Hadolint reads only Dockerfiles. Many CIS changes (for example `docker.sock` auditing, or the devicemapper storage driver) are about the Docker host or daemon. If no pattern in `rule_map.yaml` matches a difference, the tool selects all DL rules. It does not select zero rules.
+- **Fallback Dockerfiles.** The course `dockerfiles.zip` is on an Auburn SharePoint site that the student and the TA cannot open. If the tool cannot find a `dockerfiles.zip`, it scans 19 public Dockerfiles that are bundled with it. It also writes a warning. The sources and licenses are in [`src/cisdiff/data/sample-dockerfiles/SOURCES.md`](src/cisdiff/data/sample-dockerfiles/SOURCES.md). If you give `--dockerfiles`, or a `dockerfiles.zip` is in the current folder, the tool does not use the fallback files.
 - **Safe input handling.** The tool checks the PDF type, size and header bytes. It reads YAML with `yaml.safe_load`. It extracts the zip with checks against path traversal, symlinks and zip bombs. It starts Hadolint without a shell.
 
 ## Results on the course PDFs
@@ -43,6 +44,8 @@ Design decisions:
 | v1 vs v2 | `devicemapper` (new 2.7), `docker data root` | all DL rules |
 | v1 vs v1 | none | `NO DIFFERENCES FOUND` → all rules |
 | v2 vs v2 | none | `NO DIFFERENCES FOUND` → all rules |
+
+With the 19 fallback Dockerfiles, the first three inputs give 71 findings in 11 files (DL rules only). The last two inputs give 94 findings in 19 files, because all rules also include the ShellCheck (SC) rules.
 
 ## Run from source
 
@@ -63,7 +66,7 @@ Requirements: Linux x86_64, Python 3.12, about 3 GB free disk space. An NVIDIA G
    ```bash
    export HF_TOKEN=hf_...
    ```
-4. Put the CIS PDFs in `inputs/` and the course `dockerfiles.zip` in the repo folder.
+4. Put the CIS PDFs in `inputs/`. If you have the course `dockerfiles.zip`, put it in the repo folder. If you do not have it, the tool uses the bundled fallback Dockerfiles.
 5. Run the tool:
    ```bash
    cisdiff inputs/docker-cis-v0.pdf inputs/docker-cis-v1.pdf --dockerfiles dockerfiles.zip
@@ -97,7 +100,7 @@ Download `cisdiff` from the latest [GitHub Release](../../releases). Hadolint an
    ```bash
    chmod +x cisdiff
    ```
-3. Run the five inputs. Put `dockerfiles.zip` in the current folder, or add `--dockerfiles <path>`.
+3. Run the five inputs. If you have `dockerfiles.zip`, put it in the current folder or add `--dockerfiles <path>`. If you do not have it, the tool scans the bundled fallback Dockerfiles.
    ```bash
    ./cisdiff docker-cis-v0.pdf docker-cis-v1.pdf   # Input-1
    ./cisdiff docker-cis-v0.pdf docker-cis-v2.pdf   # Input-2
@@ -125,7 +128,7 @@ GitHub Actions (`.github/workflows/tests.yml`) runs all tests on each push and p
 ## Files not in this repository
 
 - **CIS PDFs:** CIS licenses the benchmarks, so they are not in this public repo. Get them from Canvas.
-- **`dockerfiles.zip`:** the course SharePoint file needs an Auburn login.
+- **`dockerfiles.zip`:** the course SharePoint file is not accessible to the student or the TA. The tool uses the bundled fallback Dockerfiles instead (see above).
 
 ## AI disclosure
 

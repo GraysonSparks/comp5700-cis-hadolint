@@ -12,6 +12,8 @@ used in the following way(s) in this project:
   and the CSV summary)
 - Writing the 13 test cases, the GitHub Actions workflow, the PyInstaller
   build script and the README
+- Choosing and downloading the 19 public Dockerfiles in the fallback set,
+  and checking their licenses (`src/cisdiff/data/sample-dockerfiles/SOURCES.md`)
 - Running the full pipeline on the five required input pairs and checking
   the detected differences against a manual diff of the recommendation titles
 

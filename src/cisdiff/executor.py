@@ -61,6 +61,15 @@ def _data_path(name: str) -> Path:
     return Path(resources.files("cisdiff") / "data" / name)
 
 
+def fallback_dockerfiles() -> Path:
+    """Return the folder of public Dockerfiles that ships with the tool.
+
+    The CLI uses it only when the course dockerfiles.zip is not available.
+    See data/sample-dockerfiles/SOURCES.md for the sources and licenses.
+    """
+    return _data_path("sample-dockerfiles")
+
+
 def load_rule_catalog() -> dict[str, str]:
     """Return {rule_id: default severity} for every rule in the Hadolint README."""
     with _data_path("hadolint_rules.csv").open() as fh:

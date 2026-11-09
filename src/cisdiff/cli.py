@@ -41,7 +41,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("pdf_a", help="first CIS benchmark PDF (older version)")
     p.add_argument("pdf_b", help="second CIS benchmark PDF (newer version)")
     p.add_argument("--dockerfiles", type=Path, default=None,
-                   help="zip file or folder of Dockerfiles (default: ./dockerfiles.zip or $CISDIFF_DOCKERFILES)")
+                   help="zip file or folder of Dockerfiles (default: ./dockerfiles.zip or $CISDIFF_DOCKERFILES; if neither exists, the bundled public Dockerfiles)")
     p.add_argument("--out", type=Path, default=None,
                    help="output folder (default: outputs/<a>_vs_<b>)")
     p.add_argument("--prompt-type", choices=extractor.PROMPT_TYPES, default="few-shot",
@@ -97,10 +97,21 @@ def main(argv: list[str] | None = None) -> int:
     # ---- Task-3 ----
     diffs = executor.load_difference_files(names_txt, reqs_txt)
     rules_txt = executor.map_differences_to_rules(diffs, out / "hadolint-rules.txt")
-    dockerfiles = args.dockerfiles or _default_dockerfiles()
-    if dockerfiles is None or not dockerfiles.exists():
-        log.error("Dockerfiles not found. Put dockerfiles.zip in the current folder or pass --dockerfiles.")
-        return 3
+    if args.dockerfiles is not None:
+        dockerfiles = args.dockerfiles
+        if not dockerfiles.exists():
+            log.error("%s does not exist. Give a .zip file or a folder of Dockerfiles.", dockerfiles)
+            return 3
+    else:
+        dockerfiles = _default_dockerfiles()
+        if os.environ.get("CISDIFF_DOCKERFILES") and not dockerfiles.exists():
+            log.error("CISDIFF_DOCKERFILES=%s does not exist.", dockerfiles)
+            return 3
+        if dockerfiles is None:
+            dockerfiles = executor.fallback_dockerfiles()
+            log.warning("dockerfiles.zip not found. Scanning the %d bundled public Dockerfiles "
+                        "(see data/sample-dockerfiles/SOURCES.md) instead.",
+                        len(list(dockerfiles.glob("*/Dockerfile"))))
     scan = executor.run_hadolint(rules_txt, dockerfiles)
     csv_path = executor.write_results_csv(scan, out / "hadolint-results.csv")
     log.info("Task-3 done: %s (%d findings)", csv_path.name, len(scan))
