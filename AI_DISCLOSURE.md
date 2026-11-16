@@ -21,4 +21,10 @@ Gemma-3-1B (`google/gemma-3-1b-it`) is the LLM that the tool itself uses to
 extract key data elements, as the project specification requires. Its
 prompts are in `PROMPT.md` and all of its outputs are in `llm-outputs.txt`.
 
-<!-- TODO (Grayson): add what you changed or wrote yourself before submission. -->
+The author did the following work:
+
+- Made the design decisions for the project, including working alone, the
+  fallback set of public Dockerfiles when `dockerfiles.zip` is not
+  available, and the automatic CPU fallback for Gemma-3-1B
+- Ran the full pipeline and the PyInstaller binary, and checked the
+  outputs for each of the five input pairs
